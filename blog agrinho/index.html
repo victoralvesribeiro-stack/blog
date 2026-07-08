@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Agrinho 2026</title>
+    <style>
+        :root {
+            --primary-color: #2e7d32;
+            --secondary-color: #81c784;
+            --bg-color: #f1f8e9;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        main {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .form-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+
+        .form-section h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 0.5rem;
+            margin: 0.5rem 0 1rem 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #1b5e20;
+        }
+
+        .post {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+
+        .post h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        .post-meta {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .actions {
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .like-btn {
+            background-color: #e8f5e9;
+            color: var(--primary-color);
+            border: 1px solid var(--secondary-color);
+        }
+
+        .like-btn:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .comments-section {
+            margin-top: 1.5rem;
+            border-top: 1px solid #eee;
+            padding-top: 1rem;
+        }
+
+        .comment-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comment-item {
+            background: #f9f9f9;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            border-left: 3px solid var(--secondary-color);
+        }
+
+        .comment-input-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 1rem;
+        }
+
+        .comment-input-group input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Blog Agrinho 2026</h1>
+        <p>Inovação, Sustentabilidade e Conectividade no Campo</p>
+    </header>
+
+    <main>
+        <section class="form-section">
+            <h2>Criar Nova Publicação</h2>
+            <form id="new-post-form">
+                <label for="post-title">Título do Post:</label>
+                <input type="text" id="post-title" placeholder="Ex: A Importância da Tecnologia no Campo" required>
+                
+                <label for="post-content">Conteúdo:</label>
+                <textarea id="post-content" rows="5" placeholder="Escreva aqui o seu texto sobre o Agrinho 2026..." required></textarea>
+                
+                <button type="submit">Publicar no Blog</button>
+            </form>
+        </section>
+
+        <section id="posts-container">
+            </section>
+    </main>
+
+    <script>
+        // Inicializa a lista de posts buscando do localStorage ou com posts padrão
+        let posts = JSON.parse(localStorage.getItem('agrinho_posts')) || [
+            {
+                id: 1,
+                title: "Bem-vindo ao Agrinho 2026!",
+                content: "Este ano o tema do Agrinho traz debates incríveis sobre a sustentabilidade e a evolução digital nas escolas e no campo. Participe deixando seu comentário!",
+                date: "08/07/2026",
+                likes: 0,
+                comments: []
+            }
+        ];
+
+        const postsContainer = document.getElementById('posts-container');
+        const newPostForm = document.getElementById('new-post-form');
+
+        // Função para salvar os dados atualizados no LocalStorage
+        function saveToStorage() {
+            localStorage.setItem('agrinho_posts', JSON.stringify(posts));
+        }
+
+        // Função para formatar a data atual
+        function getFormattedDate() {
+            const today = new Date();
+            const dd = String(today.getDate()).padStart(2, '0');
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const yyyy = today.getFullYear();
+            return `${dd}/${mm}/${yyyy}`;
+        }
+
+        // Função para renderizar (mostrar) os posts na tela
+        function renderPosts() {
+            postsContainer.innerHTML = '';
+
+            posts.forEach((post) => {
+                const postElement = document.createElement('article');
+                postElement.className = 'post';
+
+                // Cria o HTML do post, área de curtidas e seção de comentários
+                postElement.innerHTML = `
+                    <h3>${post.title}</h3>
+                    <div class="post-meta">Publicado em: ${post.date}</div>
+                    <p>${post.content}</p>
+                    
+                    <div class="actions">
+                        <button class="like-btn" onclick="likePost(${post.id})">❤️ Curtir (<span id="likes-count-${post.id}">${post.likes}</span>)</button>
+                    </div>
+
+                    <div class="comments-section">
+                        <h4>Comentários</h4>
+                        <ul class="comment-list" id="comment-list-${post.id}">
+                            ${post.comments.map(c => `<li class="comment-item">${c}</li>`).join('')}
+                        </ul>
+                        <div class="comment-input-group">
+                            <input type="text" id="comment-input-${post.id}" placeholder="Escreva um comentário...">
+                            <button onclick="addComment(${post.id})">Comentar</button>
+                        </div>
+                    </div>
+                `;
+                postsContainer.appendChild(postElement);
+            });
+        }
+
+        // Função para adicionar um novo Post
+        newPostForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const titleInput = document.getElementById('post-title');
+            const contentInput = document.getElementById('post-content');
+
+            const newPost = {
+                id: Date.now(), // Gera um ID único baseado no tempo
+                title: titleInput.value,
+                content: contentInput.value,
+                date: getFormattedDate(),
+                likes: 0,
+                comments: []
+            };
+
+            posts.unshift(newPost); // Adiciona o novo post no topo da lista
+            saveToStorage();
+            renderPosts();
+
+            // Limpa o formulário
+            titleInput.value = '';
+            contentInput.value = '';
+        });
+
+        // Função para curtir um post
+        function likePost(id) {
+            const post = posts.find(p => p.id === id);
+            if (post) {
+                post.likes += 1;
+                saveToStorage();
+                document.getElementById(`likes-count-${id}`).innerText = post.likes;
+            }
+        }
+
+        // Função para adicionar um comentário
+        function addComment(id) {
+            const input = document.getElementById(`comment-input-${id}`);
+            const commentText = input.value.trim();
+
+            if (commentText !== '') {
+                const post = posts.find(p => p.id === id);
+                if (post) {
+                    post.comments.push(commentText);
+                    saveToStorage();
+                    renderPosts(); // Atualiza a tela para exibir o novo comentário
+                }
+            }
+        }
+
+        // Carrega os posts na tela logo que abre a página
+        renderPosts();
+    </script>
+</body>
+</html>
